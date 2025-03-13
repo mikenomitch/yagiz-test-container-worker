@@ -10,7 +10,6 @@ export async function startAndWaitForPort(container, portToAwait) {
       await new Promise((res) => setTimeout(res, 300));
       break;
     } catch (err) {
-      console.log("err message", err.message);
       console.error(err);
       if (err.message.includes("listening")) {
         await new Promise((res) => setTimeout(res, 100));
