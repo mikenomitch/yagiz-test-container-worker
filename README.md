@@ -6,7 +6,7 @@ Note that this uses Container-enabled Durable Objects and DO-centric config, whi
 
 ## Steps
 
-1. Make sure you have a Cloudflare token with Workers and Cloudchamber access
+1. Make sure you have a Cloudflare token with Workers and Cloudchamber edit permissions
 
 2. Clone this repo, and cd into it
 
