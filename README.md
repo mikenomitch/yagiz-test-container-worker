@@ -4,13 +4,17 @@ This is a basic tempalte to get you started with Containers on Cloudflare's Deve
 
 Note that this uses Container-enabled Durable Objects and DO-centric config, which may change in the future.
 
+## Prerequisites
+
+1. Make sure Docker is installed, and the Docker daemon is running
+
 ## Steps
 
-1. Make sure you have a Cloudflare token with Workers and Cloudchamber edit permissions
+1. Make sure you have a Cloudflare token with Workers and Cloudchamber access
 
 2. Clone this repo, and cd into it
 
-3. Use this in-flight branch of Wrangler
+3. Use this Wrangler prerelease
 
 `npm install -g https://prerelease-registry.devprod.cloudflare.dev/workers-sdk/prs/8476/npm-package-wrangler-8476`
 
