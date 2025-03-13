@@ -27,3 +27,9 @@ export async function proxyFetch(container, request, portNumber) {
     .getTcpPort(portNumber)
     .fetch(request.url.replace("https://", "http://"), request.clone());
 }
+
+export async function loadBalance(containerBinding, count) {
+  let randomID = Math.floor(Math.random() * count);
+  let id = containerBinding.idFromName("lb-" + randomID);
+  return containerBinding.get(id);
+}
