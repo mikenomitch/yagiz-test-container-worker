@@ -22,8 +22,6 @@ Confirm you are using this build by running `wrangler --version`.
 
 `wrangler cloudchamber build -p -t container-starter-go:1.0 .`
 
-**note: this will be part of `wrangler deploy` if you have a Dockerfile specified**
-
 4. Wrangler deploy
 
 `wrangler deploy`
@@ -45,4 +43,16 @@ namespace_id = "<YOUR-NAMESPACE-ID-HERE>"
 
 See the dashboard for status.
 
-9. Access your Worker
+9. Access your Worker URL and go use some Containers
+
+### Notes on Setup
+
+* Steps 4-7 will all just become "wrangler deploy"
+  * The image will be auto-tagged and built on deploy
+  * The namespace will be auto-associated to the container
+  * The container will be rolled out as part of `deploy`
+* Currently there is an awkward waiting period on your first deploy, we should figure out a nice way to explain this in the dash/first worker code
+* If you update container code, you will eventually just `wrangler deploy`, for now you have to:
+  * Repush with a new tag
+  * Update your wrangler config's `image` field
+  * Do a gradual rollout (or just delete your App and make a new one)
