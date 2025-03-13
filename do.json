@@ -1,0 +1,7 @@
+{
+  "name": "my-container",
+  "script": "container-starter-go",
+  "class": "MyContainer",
+  "use_sqlite": true,
+  "use_containers": true
+}

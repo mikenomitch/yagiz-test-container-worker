@@ -1,69 +1,67 @@
 import { DurableObject } from "cloudflare:workers";
+import { startAndWaitForPort, proxyFetch } from "./containerHelpers";
 
-/**
- * Welcome to Cloudflare Workers! This is your first Durable Objects application.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your Durable Object in action
- * - Run `npm run deploy` to publish your application
- *
- * Learn more at https://developers.cloudflare.com/durable-objects
- */
+// Set this to the open port on your container
+const OPEN_CONTAINER_PORT = 8080;
 
-/**
- * Env provides a mechanism to reference bindings declared in wrangler.jsonc within JavaScript
- *
- * @typedef {Object} Env
- * @property {DurableObjectNamespace} MY_DURABLE_OBJECT - The Durable Object namespace binding
- */
+// If you are load balancing over several instances,
+// set this to the number you want to have live
+const INSTANCES_TO_LOAD_BALANCE_TO = 3;
 
-/** A Durable Object's behavior is defined in an exported Javascript class */
-export class MyDurableObject extends DurableObject {
-	/**
-	 * The constructor is invoked once upon creation of the Durable Object, i.e. the first call to
-	 * 	`DurableObjectStub::get` for a given identifier (no-op constructors can be omitted)
-	 *
-	 * @param {DurableObjectState} ctx - The interface for interacting with Durable Object state
-	 * @param {Env} env - The interface to reference bindings declared in wrangler.jsonc
-	 */
-	constructor(ctx, env) {
-		super(ctx, env);
-	}
+export class MyContainer extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    ctx.blockConcurrencyWhile(async () => {
+      await startAndWaitForPort(ctx.container, OPEN_CONTAINER_PORT);
+    });
+  }
 
-	/**
-	 * The Durable Object exposes an RPC method sayHello which will be invoked when when a Durable
-	 *  Object instance receives a request from a Worker via the same method invocation on the stub
-	 *
-	 * @param {string} name - The name provided to a Durable Object instance from a Worker
-	 * @returns {Promise<string>} The greeting to be sent back to the Worker
-	 */
-	async sayHello(name) {
-		return `Hello, ${name}!`;
-	}
+  async fetch(request) {
+    return await proxyFetch(this.ctx.container, request, OPEN_CONTAINER_PORT);
+  }
 }
 
 export default {
-	/**
-	 * This is the standard fetch handler for a Cloudflare Worker
-	 *
-	 * @param {Request} request - The request submitted to the Worker from the client
-	 * @param {Env} env - The interface to reference bindings declared in wrangler.jsonc
-	 * @param {ExecutionContext} ctx - The execution context of the Worker
-	 * @returns {Promise<Response>} The response to be sent back to the client
-	 */
-	async fetch(request, env, ctx) {
-		// We will create a `DurableObjectId` using the pathname from the Worker request
-		// This id refers to a unique instance of our 'MyDurableObject' class above
-		let id = env.MY_DURABLE_OBJECT.idFromName(new URL(request.url).pathname);
+  async fetch(request, env, ctx) {
+    const pathname = new URL(request.url).pathname;
 
-		// This stub creates a communication channel with the Durable Object instance
-		// The Durable Object constructor will be invoked upon the first call for a given id
-		let stub = env.MY_DURABLE_OBJECT.get(id);
+    // If you wish to route requests to a specific container,
+    // pass a container identifier to .get()
+    if (pathname.startsWith("/specific/")) {
+      // In this case, each unique pathname with spawn a new container
+      let id = env.MY_CONTAINER.idFromName(pathname);
+      let stub = env.MY_CONTAINER.get(id);
+      return await stub.fetch(request);
+    }
 
-		// We call the `sayHello()` RPC method on the stub to invoke the method on the remote
-		// Durable Object instance
-		let greeting = await stub.sayHello("world");
+    // If you wish to route to one of several containers interchangeably,
+    // use one of N random IDs
+    if (pathname.startsWith("/lb")) {
+      let randomID = Math.floor(Math.random() * INSTANCES_TO_LOAD_BALANCE_TO);
+      let id = env.MY_CONTAINER.idFromName("lb-" + randomID);
+      let stub = env.MY_CONTAINER.get(id);
+      return await stub.fetch(request);
+    }
 
-		return new Response(greeting);
-	},
+    const html = `
+    <!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: monospace; max-width: 600px; margin: 30px auto; padding: 20px; border: 1px solid #eee; }
+    .route { color: #d33; font-weight: bold; }
+  </style>
+</head>
+<body>
+  This is a Container-enabled Worker.<br>Route to <span class="route">/specific/:container-id</span> to spin up a new container.<br>Route to <span class="route">/lb</span> to load balance across multiple.
+</body>
+</html>
+`;
+
+    return new Response(html, {
+      headers: {
+        "Content-Type": "text/html;charset=UTF-8",
+      },
+    });
+  },
 };

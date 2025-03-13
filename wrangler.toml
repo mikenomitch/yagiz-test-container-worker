@@ -1,0 +1,31 @@
+name = "container-starter-go"
+main = "src/index.js"
+compatibility_date = "2025-03-10"
+
+[observability]
+enabled = true
+
+# [[containers]]
+# instance_type = "basic"
+# sleep_after = "1m"
+# class_name = "MyContainer"
+# binding = "MY_CONTAINER"
+# image = "./Dockerfile"
+# # max_instances = 20
+
+
+[[durable_objects.bindings]]
+name = "MY_CONTAINER"
+class_name = "MyContainer"
+script_name = "container-starter-go"
+
+[[containers.app]]
+instances = 10
+name = "go-hi"
+
+[containers.app.durable_objects]
+namespace_id = "61ce4d37083a4d709759e5b2cec3111f"
+
+[containers.app.configuration]
+image = "registry.cloudchamber.cfdata.org/gohi:1.0"
+network = { mode = "private" }
