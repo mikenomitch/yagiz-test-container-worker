@@ -5,8 +5,15 @@ compatibility_date = "2025-03-10"
 [observability]
 enabled = true
 
-# what we'll drive towards
+[[durable_objects.bindings]]
+name = "MY_CONTAINER"
+class_name = "MyContainer"
 
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MyContainer"]
+
+# what we'll drive towards
 # [[containers]]
 # instance_type = "basic"
 # sleep_after = "1m"
@@ -15,6 +22,8 @@ enabled = true
 # image = "./Dockerfile"
 # # max_instances = 20
 
+
+# What is required today is below:
 [[containers]]
 instances = 5
 name = "go-hi"
@@ -27,11 +36,3 @@ namespace_id = "b872506f17c74d2e9117e84033873dc9"
 [containers.configuration]
 image = "registry.cloudchamber.cfdata.org/container-starter-go:1.0"
 network = { mode = "private" }
-
-[[durable_objects.bindings]]
-name = "MY_CONTAINER"
-class_name = "MyContainer"
-
-[[migrations]]
-tag = "v1"
-new_sqlite_classes = ["MyContainer"]
