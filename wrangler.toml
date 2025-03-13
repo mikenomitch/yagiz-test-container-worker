@@ -1,9 +1,11 @@
-name = "container-starter-go"
+name = "go-container-starter"
 main = "src/index.js"
 compatibility_date = "2025-03-10"
 
 [observability]
 enabled = true
+
+# what we'll drive towards
 
 # [[containers]]
 # instance_type = "basic"
@@ -13,19 +15,23 @@ enabled = true
 # image = "./Dockerfile"
 # # max_instances = 20
 
+[[containers]]
+instances = 5
+name = "go-hi"
+class_name = "MyContainer"
+
+# FILL IN YOUR NAMESPACE ID HERE:
+[containers.durable_objects]
+namespace_id = "b872506f17c74d2e9117e84033873dc9"
+
+[containers.configuration]
+image = "registry.cloudchamber.cfdata.org/container-starter-go:1.0"
+network = { mode = "private" }
 
 [[durable_objects.bindings]]
 name = "MY_CONTAINER"
 class_name = "MyContainer"
-script_name = "container-starter-go"
 
-[[containers.app]]
-instances = 10
-name = "go-hi"
-
-[containers.app.durable_objects]
-namespace_id = "61ce4d37083a4d709759e5b2cec3111f"
-
-[containers.app.configuration]
-image = "registry.cloudchamber.cfdata.org/gohi:1.0"
-network = { mode = "private" }
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MyContainer"]
