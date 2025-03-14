@@ -1,6 +1,6 @@
 # Container Worker Starter - Go
 
-This is a basic tempalte to get you started with Containers on Cloudflare's Developer Platform.
+This is a basic template to get you started with Containers on Cloudflare's Developer Platform.
 
 Note that this uses Container-enabled Durable Objects and DO-centric config, which may change in the future.
 

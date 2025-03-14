@@ -21,7 +21,7 @@ export default {
     // pass a container identifier to .get()
 
     if (pathname.startsWith("/specific/")) {
-      // In this case, each unique pathname with spawn a new container
+      // In this case, each unique pathname will spawn a new container
       let id = env.MY_CONTAINER.idFromName(pathname);
       let stub = env.MY_CONTAINER.get(id);
       return await stub.fetch(request);
