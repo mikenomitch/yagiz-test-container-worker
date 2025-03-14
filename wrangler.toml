@@ -5,6 +5,24 @@ compatibility_date = "2025-03-10"
 [observability]
 enabled = true
 
+[[durable_objects.bindings]]
+name = "MY_CONTAINER"
+class_name = "MyContainer"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MyContainer"]
+
+# What we'll drive towards
+# [[containers]]
+# instance_type = "basic"
+# sleep_after = "1m"
+# class_name = "MyContainer"
+# binding = "MY_CONTAINER"
+# image = "./Dockerfile"
+# # max_instances = 20
+
+# What is required today is below:
 [[containers]]
 instances = 5
 name = "hello-containers-go"
@@ -13,11 +31,3 @@ class_name = "MyContainer"
 [containers.configuration]
 image = "."
 network = { mode = "private" }
-
-[[durable_objects.bindings]]
-name = "MY_CONTAINER"
-class_name = "MyContainer"
-
-[[migrations]]
-tag = "v1"
-new_sqlite_classes = ["MyContainer"]
