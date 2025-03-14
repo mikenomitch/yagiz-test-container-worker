@@ -1,4 +1,4 @@
-name = "go-container-starter"
+name = "container-starter-2"
 main = "src/index.js"
 compatibility_date = "2025-03-10"
 
@@ -13,7 +13,7 @@ class_name = "MyContainer"
 tag = "v1"
 new_sqlite_classes = ["MyContainer"]
 
-# what we'll drive towards
+# What we'll drive towards
 # [[containers]]
 # instance_type = "basic"
 # sleep_after = "1m"
@@ -22,17 +22,12 @@ new_sqlite_classes = ["MyContainer"]
 # image = "./Dockerfile"
 # # max_instances = 20
 
-
 # What is required today is below:
 [[containers]]
 instances = 5
-name = "go-hi"
+name = "hello-containers-go"
 class_name = "MyContainer"
 
-# FILL IN YOUR NAMESPACE ID HERE:
-[containers.durable_objects]
-namespace_id = "b872506f17c74d2e9117e84033873dc9"
-
 [containers.configuration]
-image = "registry.cloudchamber.cfdata.org/container-starter-go:1.0"
+image = "."
 network = { mode = "private" }
