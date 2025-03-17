@@ -14,7 +14,7 @@ const OPEN_CONTAINER_PORT = 8080;
 const LB_INSTANCES = 3;
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
     const pathname = new URL(request.url).pathname;
 
     // If you wish to route requests to a specific container,
