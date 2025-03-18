@@ -18,7 +18,7 @@ export async function startAndWaitForPort(
 
       const conn = await port.connect(`10.0.0.1:${portToAwait}`);
       conn.close();
-      break;
+      return;
     } catch (err) {
       console.error("Error connecting to the container on", i, "try", err);
 
