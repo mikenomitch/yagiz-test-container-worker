@@ -16,8 +16,7 @@ export async function startAndWaitForPort(
         monitor = container.monitor();
       }
 
-      const conn = await port.connect(`10.0.0.1:${portToAwait}`);
-      conn.close();
+      await (await port.fetch("http://ping")).text();
       return;
     } catch (err) {
       console.error("Error connecting to the container on", i, "try", err);
