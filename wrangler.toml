@@ -1,4 +1,4 @@
-name = "container-starter-2"
+name = "container-starter"
 main = "src/index.js"
 compatibility_date = "2025-03-10"
 
@@ -29,5 +29,5 @@ name = "hello-containers-go"
 class_name = "MyContainer"
 
 [containers.configuration]
-image = "."
+image = "./Dockerfile"
 network = { mode = "private" }
