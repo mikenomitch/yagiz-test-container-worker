@@ -16,7 +16,7 @@ Note that this uses Container-enabled Durable Objects and DO-centric config, whi
 
 3. Use this Wrangler prerelease
 
-`npm install -g https://prerelease-registry.devprod.cloudflare.dev/workers-sdk/prs/8482/npm-package-wrangler-8482`
+`npm install -g https://prerelease-registry.devprod.cloudflare.dev/workers-sdk/runs/13973948516/npm-package-wrangler-8586`
 
 After running this command, your global wrangler will be overridden!
 

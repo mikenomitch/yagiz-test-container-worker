@@ -25,9 +25,9 @@ new_sqlite_classes = ["MyContainer"]
 # What is required today is below:
 [[containers]]
 instances = 5
-name = "hello-containers-go"
+name = "hello-containers"
 class_name = "MyContainer"
+image = "./Dockerfile"
 
 [containers.configuration]
-image = "./Dockerfile"
 network = { mode = "private" }
