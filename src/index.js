@@ -21,33 +21,33 @@ export default {
       return await stub.fetch(request);
     }
 
-    if (pathname.startsWith("/status/id/")) {
-      let idFromPath = pathname.split("/")[3];
+    if (pathname.startsWith("/status/")) {
+      let idFromPath = pathname.split("/")[2];
       // In this case, each unique pathname will spawn a new container
       let id = env.MY_CONTAINER.idFromName(idFromPath);
       let stub = env.MY_CONTAINER.get(id);
-      let isRunning = stub.getStatus();
+      let isRunning = await stub.getStatus();
 
       return new Response(`Running? - ${isRunning}`, { status: 200 });
     }
 
-    if (pathname.startsWith("/destroy/id/")) {
-      let idFromPath = pathname.split("/")[3];
+    if (pathname.startsWith("/destroy/")) {
+      let idFromPath = pathname.split("/")[2];
       // In this case, each unique pathname will spawn a new container
       let id = env.MY_CONTAINER.idFromName(idFromPath);
       let stub = env.MY_CONTAINER.get(id);
-      stub.destroySelf()
-      return new Response("Container destroyed", { status: 200 });
+      await stub.destroySelf()
+      return new Response("Container destroyed attempted", { status: 200 });
     }
 
-    if (pathname.startsWith("/signal/id/")) {
+    if (pathname.startsWith("/signal/")) {
       // In this case, each unique pathname will spawn a new container
 
-      let idFromPath = pathname.split("/")[3];
-      let signalNumber = pathname.split("/")[4];
+      let idFromPath = pathname.split("/")[2];
+      let signalNumber = pathname.split("/")[3];
       let id = env.MY_CONTAINER.idFromName(idFromPath);
       let stub = env.MY_CONTAINER.get(id);
-      stub.signal(signalNumber)
+      await stub.signal(signalNumber)
       return new Response(`Container signaled ${signalString}`, { status: 200 });
     }
 
@@ -81,9 +81,5 @@ export class MyContainer extends DurableObject {
 
   getStatus() {
     return this.ctx.container.running;
-  }
-
-  setUpMonitoring() {
-    // set it up
   }
 }
