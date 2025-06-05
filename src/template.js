@@ -8,10 +8,10 @@ export default `
 </head>
   <body>
     This is a Container-enabled Worker!<br><br>
-    Route to <b><a href="/id/1">/id/<ID></a></b> to make a container
-    Route to <b><a href="/status/1">/status/<ID></a></b> to check if its running
-    Route to <b><a href="/destroy/1">/destroy/<ID></a></b> to destroy it
-    Route to <b><a href="/signal/1/1">/signal/<ID>/<SIGNAL_INT></a></b> to sent a signal
+    Route to <b><a href="/id/1">/id/ID</a></b> to make a container
+    Route to <b><a href="/status/1">/status/ID</a></b> to check if its running
+    Route to <b><a href="/destroy/1">/destroy/ID</a></b> to destroy it
+    Route to <b><a href="/signal/1/1">/signal/ID/SIGNAL_INT</a></b> to sent a signal
   </body>
 </html>
 `;
