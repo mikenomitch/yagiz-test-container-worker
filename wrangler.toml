@@ -1,6 +1,6 @@
-name = "container-starter"
+name = "container-tester"
 main = "src/index.js"
-compatibility_date = "2025-03-10"
+compatibility_date = "2025-06-04"
 
 [observability]
 enabled = true
@@ -13,21 +13,8 @@ class_name = "MyContainer"
 tag = "v1"
 new_sqlite_classes = ["MyContainer"]
 
-# What we'll drive towards
-# [[containers]]
-# instance_type = "basic"
-# sleep_after = "1m"
-# class_name = "MyContainer"
-# binding = "MY_CONTAINER"
-# image = "./Dockerfile"
-# # max_instances = 20
-
-# What is required today is below:
 [[containers]]
-instances = 5
-name = "hello-containers"
+max_instances = 5
+name = "container-tester"
 class_name = "MyContainer"
 image = "./Dockerfile"
-
-[containers.configuration]
-network = { mode = "private" }

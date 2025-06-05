@@ -1,19 +1,27 @@
 export async function startAndWaitForPort(
   container,
   portToAwait,
-  maxTries = 10,
+  maxTries = 10
 ) {
   const port = container.getTcpPort(portToAwait);
   // promise to make sure the container does not exit
   let monitor;
 
+  function onContainerExit() {
+    console.log("Container exited");
+  }
+
+  // the "err" value can be customized by the destroy() method
+  async function onContainerError(err) {
+    console.log("Container errored", err);
+  }
+
   for (let i = 0; i < maxTries; i++) {
     try {
       if (!container.running) {
         container.start();
-
         // force DO to keep track of running state
-        monitor = container.monitor();
+        monitor = container.monitor().then(onContainerExit).catch(onContainerError);
       }
 
       await (await port.fetch("http://ping")).text();
@@ -29,7 +37,7 @@ export async function startAndWaitForPort(
       // no container yet
       if (
         err.message.includes(
-          "there is no container instance that can be provided",
+          "there is no container instance that can be provided"
         )
       ) {
         await new Promise((res) => setTimeout(res, 300));
@@ -41,7 +49,7 @@ export async function startAndWaitForPort(
   }
 
   throw new Error(
-    `could not check container healthiness after ${maxTries} tries`,
+    `could not check container healthiness after ${maxTries} tries`
   );
 }
 
@@ -49,10 +57,4 @@ export async function proxyFetch(container, request, portNumber) {
   return await container
     .getTcpPort(portNumber)
     .fetch(request.url.replace("https://", "http://"), request.clone());
-}
-
-export async function loadBalance(containerBinding, count) {
-  let randomID = Math.floor(Math.random() * count);
-  let id = containerBinding.idFromName("lb-" + randomID);
-  return containerBinding.get(id);
 }

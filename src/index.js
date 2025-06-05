@@ -1,38 +1,54 @@
 import { DurableObject } from "cloudflare:workers";
-import {
-  startAndWaitForPort,
-  proxyFetch,
-  loadBalance,
-} from "./containerHelpers";
+import { startAndWaitForPort, proxyFetch } from "./containerHelpers";
 import htmlTemplate from "./template";
 
 // Set this to the open port on your container
 const OPEN_CONTAINER_PORT = 8080;
 
-// If you are load balancing over several instances,
-// set this to the number you want to have live
-const LB_INSTANCES = 3;
 
 export default {
   async fetch(request, env) {
     const pathname = new URL(request.url).pathname;
 
-    // If you wish to route requests to a specific container,
-    // pass a container identifier to .get()
-
-    if (pathname.startsWith("/specific/")) {
+    if (pathname.startsWith("/id/")) {
+      let idFromPath = pathname.split("/")[2];
       // In this case, each unique pathname will spawn a new container
-      let id = env.MY_CONTAINER.idFromName(pathname);
+      let id = env.MY_CONTAINER.idFromName(idFromPath);
       let stub = env.MY_CONTAINER.get(id);
+
+      stub.setUpMonitoring()
+
       return await stub.fetch(request);
     }
 
-    // If you wish to route to one of several containers interchangeably,
-    // use one of N random IDs
+    if (pathname.startsWith("/status/id/")) {
+      let idFromPath = pathname.split("/")[3];
+      // In this case, each unique pathname will spawn a new container
+      let id = env.MY_CONTAINER.idFromName(idFromPath);
+      let stub = env.MY_CONTAINER.get(id);
+      let isRunning = stub.getStatus();
 
-    if (pathname.startsWith("/lb")) {
-      let container = await loadBalance(env.MY_CONTAINER, LB_INSTANCES);
-      return await container.fetch(request);
+      return new Response(`Running? - ${isRunning}`, { status: 200 });
+    }
+
+    if (pathname.startsWith("/destroy/id/")) {
+      let idFromPath = pathname.split("/")[3];
+      // In this case, each unique pathname will spawn a new container
+      let id = env.MY_CONTAINER.idFromName(idFromPath);
+      let stub = env.MY_CONTAINER.get(id);
+      stub.destroySelf()
+      return new Response("Container destroyed", { status: 200 });
+    }
+
+    if (pathname.startsWith("/signal/id/")) {
+      // In this case, each unique pathname will spawn a new container
+
+      let idFromPath = pathname.split("/")[3];
+      let signalNumber = pathname.split("/")[4];
+      let id = env.MY_CONTAINER.idFromName(idFromPath);
+      let stub = env.MY_CONTAINER.get(id);
+      stub.signal(signalNumber)
+      return new Response(`Container signaled ${signalString}`, { status: 200 });
     }
 
     // Serve the homepage if not routing to a container
@@ -52,5 +68,22 @@ export class MyContainer extends DurableObject {
 
   async fetch(request) {
     return await proxyFetch(this.ctx.container, request, OPEN_CONTAINER_PORT);
+  }
+
+  async destroySelf() {
+    await this.ctx.container.destroy("Manually Destroyed");
+  }
+
+  async signal(signalString) {
+    let signalNumber = parseInt(signalString, 10);
+    this.ctx.container.signal(signalNumber);
+  }
+
+  getStatus() {
+    return this.ctx.container.running;
+  }
+
+  setUpMonitoring() {
+    // set it up
   }
 }
